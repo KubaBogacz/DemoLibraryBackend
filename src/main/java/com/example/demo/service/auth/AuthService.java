@@ -1,6 +1,5 @@
-package com.example.demo.service;
+package com.example.demo.service.auth;
 
-import com.example.demo.commonTypes.UserRole;
 import com.example.demo.controller.dto.LoginDto;
 import com.example.demo.controller.dto.LoginResponseDto;
 import com.example.demo.controller.dto.RegisterDto;
@@ -9,43 +8,56 @@ import com.example.demo.infrastructure.entity.AuthEntity;
 import com.example.demo.infrastructure.entity.UserEntity;
 import com.example.demo.infrastructure.repository.AuthRepository;
 import com.example.demo.infrastructure.repository.UserRepository;
+import com.example.demo.service.auth.error.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class AuthService {
     private final AuthRepository authRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthService(AuthRepository authRepository, UserRepository userRepository, JwtService jwtService) {
+    public AuthService(AuthRepository authRepository, UserRepository userRepository, JwtService jwtService, PasswordEncoder passwordEncoder) {
         this.authRepository = authRepository;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public RegisterResponseDto register(RegisterDto dto){
+        Optional<AuthEntity> existingAuth = authRepository.findByUsername(dto.getUsername());
+
+        if(existingAuth.isPresent()){
+            throw UserAlreadyExistsException.create(dto.getUsername());
+        }
+
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(dto.getEmail());
-        UserEntity createdUser = userRepository.save(userEntity);
+        userRepository.save(userEntity);
 
         AuthEntity authEntity = new AuthEntity();
-        authEntity.setPassword(dto.getPassword());
+        authEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
         authEntity.setUsername(dto.getUsername());
         authEntity.setRole(dto.getRole());
-        authEntity.setUser(createdUser);
+        authEntity.setUser(userEntity);
 
-        AuthEntity createdAuth = authRepository.save(authEntity);
+        authRepository.save(authEntity);
 
-        return new RegisterResponseDto(createdAuth.getUsername(), createdAuth.getRole());
+        return new RegisterResponseDto(userEntity.getId(), authEntity.getUsername(), authEntity.getRole());
     }
 
     public LoginResponseDto login(LoginDto dto){
         AuthEntity authEntity = authRepository.findByUsername(dto.getUsername()).orElseThrow(RuntimeException::new);
 
-        if(!authEntity.getPassword().equals(dto.getPassword())){
+        if(!passwordEncoder.matches(dto.getPassword(), authEntity.getPassword())){
             throw new RuntimeException();
         }
 

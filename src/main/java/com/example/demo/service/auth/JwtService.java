@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.service.auth;
 
 import com.example.demo.commonTypes.UserRole;
 import com.example.demo.infrastructure.entity.AuthEntity;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
