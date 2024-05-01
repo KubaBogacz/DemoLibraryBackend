@@ -14,7 +14,11 @@ public class UserEntity {
     @Basic
     private String name;
 
-    @Column(name = "email")
+    @Column (name = "lastName")
+    @Basic
+    private String lastName;
+
+    @Column(name = "email", nullable = false)
     @Basic
     private String email;
 
@@ -61,5 +65,13 @@ public class UserEntity {
 
     public void setAuth(AuthEntity auth) {
         this.auth = auth;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

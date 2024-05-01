@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ public class AuthController {
 
     @PostMapping("/register")
 //    @PreAuthorize("hasRole('ADMIN')") //there is problem with version of spring boot; line do not work
-    public ResponseEntity<RegisterResponseDto> register(@RequestBody RegisterDto requestBody) {
+    public ResponseEntity<RegisterResponseDto> register(@Validated @RequestBody RegisterDto requestBody) {
         RegisterResponseDto dto = authService.register(requestBody);
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }

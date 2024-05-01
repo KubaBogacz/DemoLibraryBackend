@@ -8,7 +8,7 @@ import com.example.demo.infrastructure.entity.AuthEntity;
 import com.example.demo.infrastructure.entity.UserEntity;
 import com.example.demo.infrastructure.repository.AuthRepository;
 import com.example.demo.infrastructure.repository.UserRepository;
-import com.example.demo.service.auth.error.UserAlreadyExistsException;
+import com.example.demo.service.auth.error.UserAlreadyExists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class AuthService {
         Optional<AuthEntity> existingAuth = authRepository.findByUsername(dto.getUsername());
 
         if(existingAuth.isPresent()){
-            throw UserAlreadyExistsException.create(dto.getUsername());
+            throw UserAlreadyExists.create(dto.getUsername());
         }
 
         UserEntity userEntity = new UserEntity();

@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class AuthEntity {
     @Id
     @Column(name = "id")
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "username", unique = true, nullable = false)

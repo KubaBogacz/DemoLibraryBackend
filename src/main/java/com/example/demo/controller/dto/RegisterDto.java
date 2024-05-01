@@ -1,11 +1,17 @@
 package com.example.demo.controller.dto;
 
 import com.example.demo.commonTypes.UserRole;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class RegisterDto {
+    @NotBlank(message = "Password may not be blank")
     private String password;
+    @NotBlank(message = "Username may not be blank")
     private String username;
+    @NotNull
     private UserRole role;
+    @NotBlank(message = "Email may not be blank")
     private String email;
 
     public String getPassword() {
